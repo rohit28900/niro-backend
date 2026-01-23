@@ -24,9 +24,12 @@ app = FastAPI(
 # ----------------------------
 # CORS Middleware only
 # ----------------------------
+# main.py
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # Change ["*"] to a list of allowed origins or remove allow_credentials=True
+    allow_origins=["http://localhost:3000", "https://niro-frontend-staging.up.railway.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
