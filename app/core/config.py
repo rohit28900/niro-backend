@@ -1,19 +1,15 @@
 from pydantic_settings import BaseSettings
-from pydantic import Field
-
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Nirro"
-    VERSION: str = "1.0.0"
+    POSTGRES_URL: str
+    REDIS_URL: str
 
-    DATABASE_URL: str = Field(..., description="Database connection string")
-
-    SQL_ECHO: bool = True
+    API_PREFIX: str
+    APP_NAME: str
+    APP_VERSION: str
 
     class Config:
         env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"   # 🔥 THIS FIXES YOUR ERROR
 
 
 settings = Settings()

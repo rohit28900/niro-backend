@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from typing import Optional, Any
-
+from typing import Optional, Any, Dict, List
 
 class ServiceException(HTTPException):
     """
@@ -51,3 +51,29 @@ class UnauthorizedError(ServiceException):
 class ForbiddenError(ServiceException):
     def __init__(self, message: str = "Forbidden"):
         super().__init__(code="FORBIDDEN", message=message, status_code=403)
+
+
+class ValidationError(ServiceException):
+    """
+    For business-level validation errors
+    Example payload:
+    {
+        "field_errors": {
+            "email": ["Invalid format"],
+            "amount": ["Must be greater than zero"]
+        }
+    }
+    """
+    def __init__(
+        self,
+        message: str = "Validation failed",
+        field_errors: Optional[Dict[str, List[str]]] = None
+    ):
+        super().__init__(
+            code="VALIDATION_ERROR",
+            message=message,
+            status_code=422,
+            payload={
+                "field_errors": field_errors or {}
+            }
+        )

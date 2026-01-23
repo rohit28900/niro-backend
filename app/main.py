@@ -1,24 +1,52 @@
+# main.py
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
-from app.api.api_router import api_router
-from app.db.session import engine
+# Database
 from app.db.base import Base
+from app.db.session import engine
 
-# ✅ IMPORT MODELS HERE (THIS REGISTERS TABLES)
-from app.fleet.masters.vehicle.model import Vehicle
+# Config
+from app.core.config import settings
 
-app = FastAPI(title=settings.PROJECT_NAME)
+# API Routes
+from app.api.api_router import api_router
 
+# ----------------------------
+# FastAPI app instance
+# ----------------------------
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+)
 
+# ----------------------------
+# CORS Middleware only
+# ----------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ----------------------------
+# Startup event: create tables
+# ----------------------------
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
 
+# ----------------------------
+# Include all APIs
+# ----------------------------
+app.include_router(api_router, prefix=settings.API_PREFIX)
 
-app.include_router(api_router)
-
-
+# ----------------------------
+# Health check endpoint
+# ----------------------------
 @app.get("/")
 def health():
     return {"status": "ok"}
